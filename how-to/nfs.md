@@ -1,14 +1,22 @@
-**1. Check if NFS client utilities are installed:**
+# Setting Up NFS Client and Mounting NFS Shares
 
-You need to have the necessary packages to support NFS. You can check if they're installed and if not, install them. For different distributions, the commands may vary:
+This guide demonstrates how to set up the NFS client on various Linux distributions and mount NFS shares from a TrueNAS server.
+
+> **Note:** In the examples below, `192.168.10.11` is used as a sample IP address for the TrueNAS server. Ensure you replace this with the actual IP address of your TrueNAS server when following the guide.
+
+## 1. **Install NFS Client Utilities**
+
+Ensure you have the necessary packages to support NFS. Installation varies based on your distribution:
 
 - **Ubuntu/Debian**:
+
   ```bash
   sudo apt update
   sudo apt install nfs-common
   ```
 
 - **CentOS/Red Hat/Fedora**:
+
   ```bash
   sudo yum install nfs-utils
   ```
@@ -18,54 +26,49 @@ You need to have the necessary packages to support NFS. You can check if they're
   sudo pacman -S nfs-utils
   ```
 
-**2. Create a Mount Point:**
+## 2. **Create Mount Points**
 
-You need a directory to mount your NFS share to. Let's say you want to mount it to `/mnt/myshare`:
+Determine where you want to mount your NFS shares. For this guide, we'll use `/mnt/tv` and `/mnt/movies`:
 
 ```bash
 sudo mkdir -p /mnt/tv
 sudo mkdir -p /mnt/movies
 ```
 
-**3. Mount the NFS Share:**
+## 3. **Manually Mount NFS Shares**
 
-You can manually mount the NFS share using the following command:
+To manually mount the NFS share, use the following commands:
 
 ```bash
 sudo mount -t nfs 192.168.10.11:/mnt/media_server/media/movies /mnt/movies
-
 sudo mount -t nfs 192.168.10.11:/mnt/media_server/media/tv /mnt/tv
 ```
 
-Replace `your_truenas_IP` with the IP address of your TrueNAS server and `/path_to_share_on_truenas` with the path to your NFS share on the TrueNAS system.
+Ensure you adjust the share path if it differs from the example.
 
-**4. Automatically Mount on Boot:**
+## 4. **Mount NFS Shares Automatically at Boot**
 
-If you want the NFS share to be mounted automatically on boot, you'll need to edit the `/etc/fstab` file.
+To mount NFS shares automatically on boot, you need to modify the `/etc/fstab` file:
 
 ```bash
 sudo nano /etc/fstab
 ```
 
-Add the following line at the end of the file:
+Append these lines to the end of the file:
 
 ```
 192.168.10.11:/mnt/media_server/media/movies /mnt/movies nfs defaults,user,exec 0 0
-
 192.168.10.11:/mnt/media_server/media/tv /mnt/tv nfs defaults,user,exec 0 0
-
 ```
 
-Save and close the file. 
+After saving and closing the file, you can proceed to testing.
 
-**5. Test the Configuration:**
+## 5. **Test the Configuration**
 
-To ensure that there's no issue with the fstab entry, test it with:
+Verify the fstab entry for correctness:
 
 ```bash
 sudo mount -a
 ```
 
-If there's no error, then you've successfully added the NFS share to your fstab.
-
-Ensure you've set the proper permissions on the NFS share from TrueNAS so that the user can read (and possibly write, depending on your use case) to the share. 
+If no errors appear, then the NFS share has been successfully added to your fstab. Remember to configure the appropriate permissions on the NFS share from TrueNAS to allow the user to read (and possibly write, based on your needs) to the share.
