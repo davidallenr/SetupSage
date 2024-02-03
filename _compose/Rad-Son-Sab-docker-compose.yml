@@ -1,0 +1,49 @@
+# This is a sonar/radarr/sabnzbd docker-compose file
+# It will create 3 containers, one for each service
+# The services will share a download folder with sabnzbd
+version: "3.9"
+
+services:
+  radarr:
+    image: linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - /mnt/movies:/movies
+      - ./radarr:/config
+      - ./sabnzbd/Downloads:/Downloads
+    ports:
+      - "7878:7878"
+    restart: unless-stopped
+
+  sonarr:
+    image: linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - /mnt/tv:/tv
+      - ./sonarr:/config
+      - ./sabnzbd/Downloads:/Downloads
+    ports:
+      - "8989:8989"
+    restart: unless-stopped
+
+  sabnzbd:
+    image: linuxserver/sabnzbd:latest
+    container_name: sabnzbd
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - ./sabnzbd:/config
+      - ./sabnzbd/Downloads:/Downloads
+    ports:
+      - "8080:8080"
+    restart: unless-stopped

@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+  plex:
+    image: plexinc/pms-docker:plexpass
+    container_name: plex
+    ports:
+      - "32400:32400/tcp"
+      - "3005:3005/tcp"
+      - "8324:8324/tcp"
+      - "32469:32469/tcp"
+      - "1900:1900/udp"
+      - "32410:32410/udp"
+      - "32412:32412/udp"
+      - "32413:32413/udp"
+      - "32414:32414/udp"
+    volumes:
+      - ./appdata/plex:/config
+      - /mnt/movies:/movies
+      - /mnt/movies_4k:/movies_4k
+      - /mnt/tv:/tv
+      - /mnt/tv_4k:/tv_4k
+      - /dev/shm:/transcode
+    environment:
+      - TZ=America/New_York
+      - HOSTNAME=dockerPlex
+      - PLEX_CLAIM=your_claim_token
+      - ADVERTISE_IP=http://192.168.10.12:32400/
