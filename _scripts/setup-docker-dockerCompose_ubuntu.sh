@@ -27,6 +27,9 @@ sudo curl -SL "https://github.com/docker/compose/releases/download/${DOCKER_COMP
 # Make Docker Compose executable
 sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 
+# Add Docker Compose directory to user's PATH
+echo 'export PATH="/usr/local/lib/docker/cli-plugins:$PATH"' >> ~/.bashrc
+
 # Print Docker and Docker Compose versions to verify installation
 echo "Docker and Docker Compose versions:"
 docker --version
