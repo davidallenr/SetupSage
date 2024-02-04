@@ -1,48 +1,41 @@
 #!/bin/bash
 
+echo "Starting the backup process."
+
 # Define the source directory for docker-compose and configs
 SOURCE_DIR="$HOME/docker"
-
-# Check if source directory exists
-if [ ! -d "$SOURCE_DIR" ]; then
-  echo "Source directory does not exist. Exiting."
-  exit 1
-fi
-
-# Backup destination directory on the NAS with YYYY-MM-DD format
 BACKUP_ROOT="/mnt/docker-config/"
-BACKUP_DEST="$BACKUP_ROOT$(date +%Y-%m-%d)"
-# Ensure the backup directory exists, or create it
-mkdir -p "$BACKUP_DEST" || { echo "Could not create backup directory. Exiting."; exit 1; }
+LOG_DIR="$HOME/logs"
+LOG_FILE="$LOG_DIR/backup_log_$(date +%Y-%m-%d).txt"
 
-# Navigate to the source directory
+# Ensure necessary directories exist
+mkdir -p "$SOURCE_DIR" "$LOG_DIR" "$BACKUP_ROOT" || { echo "Failed to ensure source, log, or backup directories exist. Exiting."; exit 1; }
+
+# Log start
+echo "$(date): Backup process initiated." >> "$LOG_FILE"
+
+# Backup preparation
+BACKUP_DEST="$BACKUP_ROOT$(date +%Y-%m-%d)"
+mkdir -p "$BACKUP_DEST" || { echo "Could not create backup directory. Exiting."; exit 1; }
 cd "$SOURCE_DIR" || { echo "Could not navigate to source directory. Exiting."; exit 1; }
 
-# Dynamically build the list of directories (excluding hidden ones)
+# Building service list
 services=$(find . -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | grep -v '^\.' | tr '\n' '-' | sed 's/-$//')
+BACKUP_FILENAME="${services}_backup_$(date +%Y-%m-%d).tar.gz"
 
-# Define the backup filename with a simple date format
-BACKUP_FILENAME="${services}_backup.tar.gz"
-
-# Check if the backup file for today already exists, and remove it
+# Removing existing backup for today, if any
 if [ -f "$BACKUP_DEST/$BACKUP_FILENAME" ]; then
+  echo "Removing existing backup file for today." >> "$LOG_FILE"
   rm "$BACKUP_DEST/$BACKUP_FILENAME" || { echo "Could not remove existing backup file. Exiting."; exit 1; }
 fi
 
-# Create a single tarball including docker-compose.yml and all service directories
+# Creating new backup
+echo "Creating backup file: $BACKUP_FILENAME"
 tar -zcf "$BACKUP_DEST/$BACKUP_FILENAME" docker-compose.yml ${services// /} || { echo "Backup failed. Exiting."; exit 1; }
 
 echo "Backup completed successfully. File is stored in $BACKUP_DEST/$BACKUP_FILENAME"
+echo "$(date): Backup successful. File: $BACKUP_DEST/$BACKUP_FILENAME" >> "$LOG_FILE"
 
-# Ensure the logs directory exists
-LOG_DIR="$HOME/logs"
-mkdir -p "$LOG_DIR"
-
-# Cleanup: Remove backups older than 5 days and log the deleted directories
-find "$BACKUP_ROOT" -mindepth 1 -maxdepth 1 -type d -mtime +5 -exec sh -c 'echo "Removing directory: $1" >> "$HOME/logs/backup_cleanup.log"; rm -rf "$1"' _ {} \; || { echo "Cleanup failed. Old backups may still exist."; }
-
-# Logging the completion
-echo "$(date): Backup and cleanup completed." >> "$LOG_DIR/backup_log.txt"
 
 # Running this file as a cron job
 # To run this script as a cron job, you can add it to the crontab file. Open the crontab file for editing:
