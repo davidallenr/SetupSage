@@ -1,25 +1,28 @@
 #!/bin/bash
 
-echo "Starting the cleanup process."
-
+# Configuration
 BACKUP_ROOT="/mnt/docker-config/"
 LOG_DIR="$HOME/logs"
+MAX_BACKUPS=5
 LOG_FILE="$LOG_DIR/cleanup_log_$(date +%Y-%m-%d).txt"
 
-mkdir -p "$LOG_DIR" || { echo "Failed to ensure log directory exists. Exiting."; exit 1; }
+# Start cleanup process
+echo "$(date '+%Y-%m-%d %H:%M:%S'): Starting the cleanup process." | tee -a "$LOG_FILE"
 
-# Logging cleanup start
-echo "$(date): Cleanup process initiated." >> "$LOG_FILE"
+# Ensure log directory exists
+mkdir -p "$LOG_DIR" || { echo "$(date '+%Y-%m-%d %H:%M:%S'): Failed to ensure log directory exists. Exiting."; tee -a "$LOG_FILE"; exit 1; }
 
 # Cleanup operation
-find "$BACKUP_ROOT" -mindepth 1 -maxdepth 1 -type d | sort -r | tail -n +6 | while read -r dir; do
-    echo "Removing old backup directory: $dir" >> "$LOG_FILE"
-    rm -rf "$dir"
+find "$BACKUP_ROOT" -mindepth 1 -maxdepth 1 -type d | sort -r | tail -n +$((MAX_BACKUPS+1)) | while read -r dir; do
+    if [[ "$dir" =~ ^$BACKUP_ROOT[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+        echo "$(date '+%Y-%m-%d %H:%M:%S'): Removing old backup directory: $dir" | tee -a "$LOG_FILE"
+        rm -rf "$dir"
+    else
+        echo "$(date '+%Y-%m-%d %H:%M:%S'): Skipping non-conforming directory: $dir" | tee -a "$LOG_FILE"
+    fi
 done
 
-echo "Cleanup process completed."
-echo "$(date): Cleanup completed." >> "$LOG_FILE"
-
+echo "$(date '+%Y-%m-%d %H:%M:%S'): Cleanup completed." | tee -a "$LOG_FILE"
 
 # Running this file as a cron job
 # To run this script as a cron job, you can add it to the crontab file. Open the crontab file for editing:
