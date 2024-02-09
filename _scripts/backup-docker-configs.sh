@@ -20,10 +20,11 @@ cd "$SOURCE_DIR" || { echo "$(date '+%Y-%m-%d %H:%M:%S'): Could not navigate to 
 
 # Building service list with validation for special characters
 services=$(find . -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | grep -v '^\.' | tr '\n' ' ')
-if echo "$services" | grep -q "[^-a-zA-Z0-9_ ]"; then
+if echo "$services" | grep -q "[^-a-zA-Z0-9_ ]"; then # Corrected line
     echo "$(date '+%Y-%m-%d %H:%M:%S'): Service names contain special characters. Exiting." | tee -a "$LOG_FILE"
     exit 1
 fi
+
 
 # Adjust services format for tar command
 services_formatted=$(echo $services | tr ' ' '\n' | grep -v '^\.' | tr '\n' '-' | sed 's/-$//')
