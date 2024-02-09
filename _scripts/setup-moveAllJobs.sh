@@ -19,11 +19,16 @@ chmod +x "$TARGET_DIR"/*.sh
 echo "Preparing to update crontab with backup jobs..."
 
 # Backup current crontab
-crontab -l > crontab_backup.txt
-echo "Current crontab backed up to crontab_backup.txt"
+CRONTAB_BACKUP="crontab_backup.txt"
+crontab -l > "$CRONTAB_BACKUP"
+echo "Current crontab backed up to $CRONTAB_BACKUP"
 
 # Define start time
 hour=7
+
+# Remove existing backup jobs from crontab to avoid duplicates
+grep -v 'backup-.*\.sh' "$CRONTAB_BACKUP" | crontab -
+echo "Removed existing backup jobs from crontab."
 
 # Find and schedule backup scripts
 find "$TARGET_DIR" -type f -name "backup-*.sh" | sort | while read -r script; do
@@ -36,8 +41,8 @@ find "$TARGET_DIR" -type f -name "backup-*.sh" | sort | while read -r script; do
     # Format script for crontab
     job="0 $hour * * * $script"
 
-    # Check if the job is already in the crontab to avoid duplicates
-    crontab -l | grep -qF -- "$script" || (crontab -l; echo "$job") | crontab -
+    # Add new job to the crontab
+    (crontab -l; echo "$job") | crontab -
     echo "Scheduled: $script to run at $hour:00"
 
     # Increment the hour for the next script
