@@ -1,51 +1,29 @@
 # SetupSage Repository
 
-Welcome to the `SetupSage` repository. This repository serves as a comprehensive guide for setting up, troubleshooting, and maintaining various technical systems. Here, you'll find a plethora of resources, from diving deep into Docker, understanding NFS mounts, to resolving intricate issues.
+Welcome to the `SetupSage` repository, your comprehensive resource for setting up, configuring, and troubleshooting your media server environment. This repository focuses on Docker deployments, server management, and includes detailed documentation, configuration files, and scripts to assist in creating an efficient setup for media servers and other applications.
 
-## Table of Contents
+## Repository Structure
 
-- [**Best Practices**](./best-practices)
-  - Guidelines and practices for optimal system setup and maintenance.
-- [**How-To Guides**](./how-to)
+This repository is organized into several key areas to help you navigate through the setup process:
 
-  - [**Databases**](./how-to/databases)
-    - Guidelines on setting up and managing databases.
-  - [**Docker**](./how-to/docker)
-    - [Setting up Docker on Ubuntu](./how-to/docker/setup-docker-ubuntu.md)
-    - [Plex with Docker](./how-to/docker/plex-docker.md)
-    - [SABnzbd, Radarr, and Sonarr with Docker](./how-to/docker/sab-radarr-sonarr-docker.md)
-  - [**Servers**](./how-to/servers)
-    - [Setting up Nginx](./how-to/servers/nginx-setup.md)
-  - [**Troubleshooting**](./how-to/troubleshooting)
-    - [**Connectivity**](./how-to/troubleshooting/connectivity)
-    - [**Performance**](./how-to/troubleshooting/performance)
-      - [Troubleshooting VM soft lockup](./how-to/troubleshooting/performance/troubleshooting-vm-soft-lockup.md)
-      - [VM Reporting Low Disk Space](./how-to/troubleshooting/performance/vm-reporting-low-space.md)
+- **Documentation and Guides**: Includes markdown guides for Docker setups, NFS configurations, server setups, and more.
+- **Docker**: Contains guides and configuration files for Docker container setups.
+- **Servers**: Provides setup instructions for web servers, including Nginx.
+- **Troubleshooting**: Offers solutions for common issues in virtual machines and Docker environments.
+- **Docker Compose Files**: Features Docker Compose files for deploying applications.
+- **Scripts**: Hosts automation scripts for backup, setup, and maintenance tasks.
 
-- [**Resources**](./resources)
-  - [Ultimate Quality Settings for Radarr & Sonarr](./resources/radarr-sonarr-quality-settings.md)
-  - [Ubuntu Commands & Tips](./resources/ubuntu-commands.md)
-- [**Tools**](./tools)
-  - [**Automation**](./tools/automation)
-    - Tools and scripts for automating various tasks.
-  - [**Monitoring**](./tools/monitoring)
-    - Solutions and software for system monitoring.
+## Using the Scripts
 
-## Getting Started
+The `_scripts` folder contains several automation scripts designed to streamline your setup and maintenance processes. Here's how to use them:
 
-1. Newcomers, start with the [Best Practices](./best-practices) section to grasp the foundational principles.
-2. For step-by-step instructions, the [How-To Guides](./how-to) has got you covered.
-3. Delve into the [Tools](./tools) section for insights on specific utilities.
-4. If you're facing hiccups, [Troubleshooting](./how-to/troubleshooting) offers a helping hand.
+### setup-moveAllJobs.sh
 
-## Contributing
+This script automates the process of moving all shell scripts from the `_scripts` directory to a designated `jobs` directory on your machine, making them executable, and scheduling backup jobs in the crontab to run at specific intervals.
 
-We value your insights! For suggestions, corrections, or additional content, kindly open a pull request or raise an issue.
+**To use the script:**
 
-## License
-
-The contents of this repository are under the [MIT License](./LICENSE). For detailed insights, refer to the `LICENSE` file.
-
----
-
-_Last updated: [9/4/2023]_
+1. **Navigate to the `_scripts` Folder**: Change your directory to the `_scripts` folder within the `SetupSage` repository.
+   ```bash
+   cd path/to/SetupSage/_scripts
+   ```

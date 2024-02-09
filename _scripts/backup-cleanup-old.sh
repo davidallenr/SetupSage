@@ -4,7 +4,7 @@
 BACKUP_ROOT="/mnt/docker-config/"
 LOG_DIR="$HOME/logs"
 MAX_BACKUPS=5
-LOG_FILE="$LOG_DIR/cleanup_log_$(date +%Y-%m-%d).txt"
+LOG_FILE="$LOG_DIR/$(date +%Y-%m-%d)_cleanup_log.txt"  # Improved log file naming
 
 # Start cleanup process
 echo "$(date '+%Y-%m-%d %H:%M:%S'): Starting the cleanup process." | tee -a "$LOG_FILE"
@@ -15,8 +15,13 @@ mkdir -p "$LOG_DIR" || { echo "$(date '+%Y-%m-%d %H:%M:%S'): Failed to ensure lo
 # Cleanup operation
 find "$BACKUP_ROOT" -mindepth 1 -maxdepth 1 -type d | sort -r | tail -n +$((MAX_BACKUPS+1)) | while read -r dir; do
     if [[ "$dir" =~ ^$BACKUP_ROOT[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
-        echo "$(date '+%Y-%m-%d %H:%M:%S'): Removing old backup directory: $dir" | tee -a "$LOG_FILE"
-        rm -rf "$dir"
+        # Check write permissions for the directory to be removed
+        if [ -w "$dir" ]; then
+            echo "$(date '+%Y-%m-%d %H:%M:%S'): Removing old backup directory: $dir" | tee -a "$LOG_FILE"
+            rm -rf "$dir" 2>>"$LOG_FILE" || echo "$(date '+%Y-%m-%d %H:%M:%S'): Failed to remove directory: $dir" | tee -a "$LOG_FILE"
+        else
+            echo "$(date '+%Y-%m-%d %H:%M:%S'): Write permission denied for directory: $dir" | tee -a "$LOG_FILE"
+        fi
     else
         echo "$(date '+%Y-%m-%d %H:%M:%S'): Skipping non-conforming directory: $dir" | tee -a "$LOG_FILE"
     fi
