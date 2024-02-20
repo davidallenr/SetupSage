@@ -9,8 +9,9 @@ else
 fi
 
 # Configuration
-REPO_PATH="$RESTIC_REPOSITORY" # Updated to use variable from .env
+REPO_PATH="$RESTIC_REPOSITORY"
 SOURCE_DIR="$HOME/docker"
+DOCKER_COMPOSE_FILE="$SOURCE_DIR/docker-compose.yml"  # Specify the path to your docker-compose file
 LOG_DIR="$HOME/logs"
 LOG_FILE="$LOG_DIR/restic_backup_$(date +%Y-%m-%d).txt"
 
@@ -25,8 +26,11 @@ TAG="${VM_ID}-$(find "$SOURCE_DIR" -maxdepth 1 -mindepth 1 -type d -exec basenam
 
 echo "$(date '+%Y-%m-%d %H:%M:%S'): Starting Restic backup process with tag $TAG." | tee -a "$LOG_FILE"
 
+# Stop Docker Compose services
+docker compose -f "$DOCKER_COMPOSE_FILE" down && echo "Docker Compose services stopped." | tee -a "$LOG_FILE"
+
 # Restic environment variables
-export RESTIC_REPOSITORY
+export RESTIC_REPOSITORY="$REPO_PATH"
 export RESTIC_PASSWORD
 
 # Perform the backup with the dynamically generated tag
@@ -40,7 +44,11 @@ else
     exit 1
 fi
 
+# Start Docker Compose services
+docker compose -f "$DOCKER_COMPOSE_FILE" up -d && echo "Docker Compose services restarted." | tee -a "$LOG_FILE"
+
 echo "$(date '+%Y-%m-%d %H:%M:%S'): Restic backup process completed." | tee -a "$LOG_FILE"
+
 
 # Running this file as a cron job and restoration example comments remain unchanged...
 
