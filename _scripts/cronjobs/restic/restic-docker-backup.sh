@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Load environment variables from .env file
-if [ -f ".env" ]; then
-    source .env
+if [ -f "~/jobs/cronjobs/restic/.env" ]; then
+    source "~/jobs/cronjobs/restic/.env"
 else
     echo ".env file not found, please ensure it exists in the same directory as this script."
     exit 1
@@ -48,7 +48,6 @@ fi
 docker compose -f "$DOCKER_COMPOSE_FILE" up -d && echo "Docker Compose services restarted." | tee -a "$LOG_FILE"
 
 echo "$(date '+%Y-%m-%d %H:%M:%S'): Restic backup process completed." | tee -a "$LOG_FILE"
-
 
 # Running this file as a cron job and restoration example comments remain unchanged...
 
