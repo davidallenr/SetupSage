@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Load environment variables from .env file
-if [ -f "~/jobs/cronjobs/restic/.env" ]; then
-    source "~/jobs/cronjobs/restic/.env"
+if [ -f "$HOME/jobs/cronjobs/restic/.env" ]; then
+    source "$HOME/jobs/cronjobs/restic/.env"
 else
     echo ".env file not found, please ensure it exists in the same directory as this script."
     exit 1

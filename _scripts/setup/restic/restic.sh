@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Load environment variables
-if [ -f "~/jobs/setup/restic/.env" ]; then
-    source "~/jobs/setup/restic/.env"
+if [ -f "$HOME/jobs/setup/restic/.env" ]; then
+    source "$HOME/jobs/setup/restic/.env"
 else
     echo ".env file not found."
     exit 1
